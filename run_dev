@@ -1,0 +1,15 @@
+#!/bin/sh
+
+LOCAL_PORT=3000
+PREFIX=
+BASE_DIR=$(dirname "$0")
+
+if ! docker ps > /dev/null 2>&1; then
+  PREFIX=sudo
+fi
+
+"$PREFIX" docker run -ti \
+                     --rm \
+                     -v "$(readlink -f "$BASE_DIR"):/opt/service/" \
+                     -p "$LOCAL_PORT:3000" \
+                     rails-specific-react-dev
