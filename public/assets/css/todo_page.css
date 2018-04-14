@@ -17,24 +17,6 @@ div.card-container {
   align-items: flex-start;
 }
 
-section.card {
-  border: 0.5em solid #000;
-  border-radius: 0.5em;
-  width: 15em;
-  position: relative;
-  perspective: 50em;
+div.card {
   align-self: auto;
-  margin: 0.5em;
-}
-
-section.card div.text {
-  height: 5em;
-}
-
-section.card div.header {
-  border-bottom: 0.25em solid #000;
-}
-
-section.card div.footer {
-  border-top: 0.25em solid #000;
 }
