@@ -14,7 +14,8 @@ TodoItem.create(
     },
     {
       title: 'Dishes',
-      text: 'Clean up.'
+      text: 'Clean up.',
+      due_at: '2018-04-12 21:30:00'
     },
     {
       title: 'Shopping',
@@ -22,6 +23,12 @@ TodoItem.create(
     },
     {
       title: 'Code',
-      text: 'Create a todo list app.'
-    }
+      text: 'Create a todo list app.',
+      due_at: '2018-04-16 08:00:00'
+    },
+    {
+      title: 'Walk',
+      text: 'Get outside.',
+      completed: true
+    },
   ])

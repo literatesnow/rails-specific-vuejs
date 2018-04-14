@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Specific</title>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="vendor/jquery/dist/jquery.slim.min.js"></script>
+    <script src="vendor/popper.js/dist/umd/popper.min.js"></script>
+
+    <link rel="stylesheet" href="vendor/pickadate/lib/compressed/themes/default.css">
+    <link rel="stylesheet" href="vendor/pickadate/lib/compressed/themes/default.date.css">
+    <link rel="stylesheet" href="vendor/pickadate/lib/compressed/themes/default.time.css">
+    <script src="vendor/pickadate/lib/compressed/picker.js"></script>
+    <script src="vendor/pickadate/lib/compressed/picker.date.js"></script>
+    <script src="vendor/pickadate/lib/compressed/picker.time.js"></script>
+
+    <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
+    <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="assets/css/todo_page.css">
+
+    <script src="vendor/vue/dist/vue.js"></script>
+    <script src="vendor/vue-router/dist/vue-router.js"></script>
+    <script src="vendor/vue-resource/dist/vue-resource.js"></script>
+
+    <script src="vendor/moment/min/moment.min.js"></script>
+
+    <script src="assets/javascript/components/todo_nav.js"></script>
+    <script src="assets/javascript/components/todo_item.js"></script>
+
+    <script src="assets/javascript/page_todo_list.js"></script>
+    <script src="assets/javascript/page_todo_new.js"></script>
+
+  </head>
+
+  <body>
+    <div id="app">
+      <todo-nav></todo-nav>
+
+      <div class="container">
+        <router-view></router-view>
+      </div>
+    </div>
+
+    <script src="assets/javascript/app.js"></script>
+  </body>
+</html>
