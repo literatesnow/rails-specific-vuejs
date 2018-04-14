@@ -1,24 +1,13 @@
-# README
+# This project is a work in progress and is currently broken.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# Specific
 
-Things you may want to cover:
+Simple Todo single page application using Ruby on Rails, Bootstrap and Vue.JS.
 
-* Ruby version
+## Browser Support
 
-* System dependencies
+* [Template literals](https://caniuse.com/#search=Template%20literals)
 
-* Configuration
+## Requirements
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* [Docker](https://www.docker.com/) installed and running.
