@@ -1,10 +1,10 @@
 var PageTodoNew = Vue.component('page-todo-new', {
   methods: {
     create: function(todoItem) {
-      router.push('list');
+      router.push({ name: 'list' });
     },
     cancel: function() {
-      router.push('list');
+      router.push({ name: 'list' });
     }
   },
 

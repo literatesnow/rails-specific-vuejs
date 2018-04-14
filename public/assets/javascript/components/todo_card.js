@@ -1,5 +1,5 @@
-var TodoItem = Vue.component('todo-item', {
-  props: ['title', 'text', 'completed', 'due_at', 'created_at'],
+var TodoCard = Vue.component('todo-card', {
+  props: ['id', 'title', 'text', 'completed', 'due_at', 'created_at'],
 
   methods: {
     infoText: function() {
@@ -26,9 +26,9 @@ var TodoItem = Vue.component('todo-item', {
         <div class="card-footer text-muted">
           <span data-toggle="tooltip" data-placement="top" :title="infoText()">Info</span>
           &bull;
-          <a href="#">Edit</a>
+          <router-link :to="{ name: 'edit', params: { id: this.id } }">Edit</router-link>
           &bull;
-          <a href="#">Delete</a>
+          Delete
         </div>
       </div>
     </div>

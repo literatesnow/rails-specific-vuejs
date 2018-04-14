@@ -4,9 +4,9 @@ Vue.use(VueRouter);
 
 var router = new VueRouter({
   routes: [
-    { path: '/list',      component: PageTodoList },
-    { path: '/new',       component: PageTodoNew  },
-    { path: '/edit/:id',  component: PageTodoEdit }
+    { name: 'list', path: '/list',      component: PageTodoList },
+    { name: 'new',  path: '/new',       component: PageTodoNew  },
+    { name: 'edit', path: '/edit/:id',  component: PageTodoEdit }
   ]
 });
 

@@ -7,6 +7,7 @@ var TodoForm = Vue.component('todo-form', {
         text:         null,
         dueDate:      null, //pickadate sets this to unix stamp
         dueTime:      null, //pickadate sets this to number of minutes into the day
+        completed:    null,
       },
 
       titleError: null,
@@ -14,11 +15,11 @@ var TodoForm = Vue.component('todo-form', {
     }
   },
 
-  props: ['todoItem'],
+  props: ['todoId'],
 
   methods: {
     hasId: function() {
-      return this.todoItem && this.todoItem.id !== undefined;
+      return this.todoId !== undefined;
     },
 
     buttonDefaults: function(e) {
@@ -26,6 +27,14 @@ var TodoForm = Vue.component('todo-form', {
 
       this.errorMessage = null;
       this.titleError   = null;
+    },
+
+    getTodo: function() {
+      this.$http.get('/todo_items/' + encodeURIComponent(this.todoId)).then(function(res) {
+        this.fromToDoItem(res.body);
+      }, function(res) {
+        this.errorMessage = new ErrorResponse(res.body).toString();
+      });
     },
 
     createTodo: function(e) {
@@ -39,19 +48,23 @@ var TodoForm = Vue.component('todo-form', {
         console.log('parp', res);
         this.$emit('create', todoItem);
       }, function(res) {
-        console.log('moo', res);
-        if (res.body.title && res.body.title.length) {
-          this.titleError = res.body.title.join(', ');
-        } else {
-          this.errorMessage = new ErrorResponse(res.body).toString();
-        }
+        handleXhrError(res);
       });
     },
 
     updateTodo: function(e) {
       this.buttonDefaults(e);
 
-      console.log('update...');
+      var todoItem = this.toToDoItem();
+
+      console.log('uppppdate', todoItem);
+
+      this.$http.put('/todo_items/' + encodeURIComponent(this.todoId), todoItem).then(function(res) {
+        console.log('updated! parp', res);
+        this.$emit('update', todoItem);
+      }, function(res) {
+        handleXhrError(res);
+      });
     },
 
     toToDoItem: function() {
@@ -59,10 +72,24 @@ var TodoForm = Vue.component('todo-form', {
         title:     this.formItem.title,
         text:      this.formItem.text,
         due_at:    this.dueAtFromForm(),
-        //completed: this.formItem.componentfalse
+        completed: this.formItem.completed
       };
 
       return todoItem;
+    },
+
+    fromToDoItem: function(todoItem) {
+      console.log('fromToDoItem', todoItem);
+
+      this.formItem.title     = todoItem.title;
+      this.formItem.text      = todoItem.text;
+      this.formItem.completed = todoItem.completed;
+
+      if (todoItem.due_at) {
+        var dueAt = moment(todoItem.due_at).toDate();
+        $('.datepicker').pickadate('set', { select: dueAt });
+        $('.timepicker').pickatime('set', { select: dueAt });
+      }
     },
 
     cancel: function() {
@@ -97,10 +124,24 @@ var TodoForm = Vue.component('todo-form', {
       }
 
       return null;
-    }
+    },
+
+    handleXhrError: function(res) {
+      if (res.body.title && res.body.title.length) {
+        this.titleError = res.body.title.join(', ');
+      } else {
+        this.errorMessage = new ErrorResponse(res.body).toString();
+      }
+    },
   },
 
   mounted: function() {
+    console.log('mounted form', this.todoId, this.hasId());
+
+    if (this.hasId()) {
+      this.getTodo();
+    }
+
     $('.datepicker').pickadate({
       onSet: function(context) {
         this.formItem.dueDate = this.datePickerSelect(context);
@@ -139,6 +180,15 @@ var TodoForm = Vue.component('todo-form', {
           <div class="form-group col-md-6">
             <label for="todoDueTime">Due Time</label>
             <input type="text" class="form-control timepicker" id="todoDueTime" placeholder="Enter due time">
+          </div>
+        </div>
+
+        <div v-if="hasId()" class="form-group">
+          <div class="form-check">
+            <input v-model="formItem.completed" class="form-check-input" type="checkbox" value="" id="todoCompleted">
+            <label class="form-check-label" for="todoCompleted">
+              Completed
+            </label>
           </div>
         </div>
 
