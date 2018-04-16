@@ -2,6 +2,12 @@
 
 Simple Todo single page application using Ruby on Rails, Bootstrap and Vue.Js.
 
+## Features
+
+* Created, edit and delete.
+* Mark as completed.
+* Due Date.
+
 ## Browser Support
 
 Tested with ``Chrome x86_64 Version 65.0.3325.181``.
