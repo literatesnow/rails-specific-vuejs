@@ -40,6 +40,7 @@ WORKDIR /opt/service/
 
 RUN echo "Bundle" \
   && bundle install --without development test \
+  && yarn install --force \
   && echo "Done"
 
 EXPOSE 3000
