@@ -12,4 +12,4 @@ fi
                      --rm \
                      -v "$(readlink -f "$BASE_DIR"):/opt/service/" \
                      -p "$LOCAL_PORT:3000" \
-                     rails-specific-react-dev
+                     rails-specific-vuejs-dev

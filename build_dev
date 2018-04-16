@@ -14,7 +14,7 @@ if ! docker ps > /dev/null 2>&1; then
   PREFIX=sudo
 fi
 
-"$PREFIX" docker build -t rails-specific-react-dev \
+"$PREFIX" docker build -t rails-specific-vuejs-dev \
                        --build-arg USER_UID="$USER_UID" \
                        --build-arg USER_GID="$USER_GID" \
                        "$BASE_DIR"
