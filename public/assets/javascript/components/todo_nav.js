@@ -17,7 +17,7 @@ var TodoNav = Vue.component('todo-nav', {
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <router-link tag="li" class="nav-item" :to="{ name: 'list' }" active-class="active" exact-active-class="active">
-            <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse.show">&bull; List</a>
+            <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse.show">&bull; Home</a>
           </router-link>
           <router-link tag="li" class="nav-item" :to="{ name: 'new' }" active-class="active" exact-active-class="active">
             <a class="nav-link" data-toggle="collapse" data-target=".navbar-collapse.show">&bull; New</a>
