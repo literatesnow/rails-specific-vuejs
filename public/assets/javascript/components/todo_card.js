@@ -11,10 +11,12 @@ var TodoCard = Vue.component('todo-card', {
       var classes = {};
       if (this.completed) {
         classes['bg-success'] = true;
+        classes['text-white'] = true;
       } else if (this.isOverdue()) {
         classes['bg-danger'] = true;
+        classes['text-white'] = true;
       } else {
-        classes['bg-dark'] = true;
+        classes['bg-light'] = true;
       }
 
       return classes;
@@ -55,7 +57,7 @@ var TodoCard = Vue.component('todo-card', {
 
   template: `
     <router-link tag="div"
-                 class="col-sm-3 text-white clickable"
+                 class="col-sm-3 clickable"
                  :to="{ name: 'edit', params: { id: this.id } }">
       <div class="card mb-3" v-bind:class="cardStyle()">
         <div class="card-header clickable">
