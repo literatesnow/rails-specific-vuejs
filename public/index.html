@@ -3,7 +3,7 @@
   <head>
     <title>Specific</title>
     <meta charset="utf-8">
-    <meta name="description" content="">
+    <meta name="description" content="Todo!">
     <meta name="author" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -30,6 +30,7 @@
 
     <script src="assets/javascript/components/todo_nav.js"></script>
     <script src="assets/javascript/components/todo_form.js"></script>
+    <script src="assets/javascript/components/todo_form_button.js"></script>
     <script src="assets/javascript/components/todo_card.js"></script>
 
     <script src="assets/javascript/page_todo_list.js"></script>
@@ -41,7 +42,7 @@
 
   <body>
     <div id="app">
-      <todo-nav></todo-nav>
+      <todo-nav v-bind:title="'Specific'"></todo-nav>
 
       <div class="container">
         <router-view></router-view>

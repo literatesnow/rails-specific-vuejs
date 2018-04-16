@@ -1,6 +1,8 @@
-//ErrorResponse
-//
-//Simple error formatting from xhr requests (vue-resource).
+/**
+ * ErrorResponse
+ *
+ * Simple error formatting from xhr requests (vue-resource).
+ */
 function ErrorResponse(body) {
   this.prefix = 'Error: ';
   this.body   = body;

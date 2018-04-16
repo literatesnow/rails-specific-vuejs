@@ -1,3 +1,8 @@
+/**
+ * TodoCard
+ *
+ * Todo items represented as a card.
+ */
 var TodoCard = Vue.component('todo-card', {
   props: ['id', 'title', 'text', 'completed', 'due_at', 'created_at'],
 

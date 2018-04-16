@@ -1,3 +1,8 @@
+/**
+ * TodoForm
+ *
+ * Form for creating or updating a todo item.
+ */
 var TodoForm = Vue.component('todo-form', {
   props: ['todoId'],
 
@@ -49,12 +54,11 @@ var TodoForm = Vue.component('todo-form', {
 
   methods: {
     hasId: function() {
-      return this.todoId !== undefined;
+      return this.todoId !== undefined &&
+             this.todoId !== null;
     },
 
-    buttonDefaults: function(e) {
-      e.preventDefault();
-
+    clearErrors: function() {
       this.errorMessage = null;
       this.titleError   = null;
     },
@@ -70,7 +74,7 @@ var TodoForm = Vue.component('todo-form', {
     },
 
     createTodo: function(e) {
-      this.buttonDefaults(e);
+      this.clearErrors();
 
       var todoItem = this.toToDoItem();
 
@@ -82,7 +86,7 @@ var TodoForm = Vue.component('todo-form', {
     },
 
     updateTodo: function(e) {
-      this.buttonDefaults(e);
+      this.clearErrors();
 
       var todoItem = this.toToDoItem();
       var uri      = '/todo_items/' + encodeURIComponent(this.todoId);
@@ -95,9 +99,10 @@ var TodoForm = Vue.component('todo-form', {
     },
 
     deleteTodo: function(e) {
-      this.buttonDefaults(e);
+      this.clearErrors();
 
       if (!confirm('Are you sure?')) {
+        this.$emit('buttonReset');
         return;
       }
 
@@ -148,6 +153,8 @@ var TodoForm = Vue.component('todo-form', {
     },
 
     handleXhrError: function(res) {
+      this.$emit('buttonReset');
+
       if (res.body.title && res.body.title.length) {
         this.titleError = res.body.title.join(', ');
       } else {
@@ -157,6 +164,12 @@ var TodoForm = Vue.component('todo-form', {
   },
 
   mounted: function() {
+    if (this.hasId()) {
+      this.getTodo();
+    } else {
+      this.loaded = true;
+    }
+
     $('.datepicker').pickadate({
       onSet: function(context) {
         this.formItem.dueDate = this.datePickerSelect(context);
@@ -169,12 +182,6 @@ var TodoForm = Vue.component('todo-form', {
         this.formItem.dueTime = this.datePickerSelect(context);
       }.bind(this)
     });
-
-    if (this.hasId()) {
-      this.getTodo();
-    } else {
-      this.loaded = true;
-    }
   },
 
   template: `
@@ -215,10 +222,10 @@ var TodoForm = Vue.component('todo-form', {
           </div>
 
           <div class="form-group">
-            <button v-if="!hasId()" v-on:click="createTodo" type="submit" class="btn btn-primary">Create</button>
-            <button v-if="hasId()" v-on:click="updateTodo" type="submit" class="btn btn-primary">Update</button>
-            <button v-if="hasId()" v-on:click="deleteTodo" type="submit" class="btn btn-danger">Delete</button>
-            <button v-on:click="cancel" type="button" class="btn btn-secondary">Cancel</button>
+            <todo-form-button v-if="!hasId()" v-on:buttonClick="createTodo" label="Create" class="btn btn-primary" />
+            <todo-form-button v-if="hasId()" v-on:buttonClick="updateTodo" label="Update" class="btn btn-primary" />
+            <todo-form-button v-if="hasId()" v-on:buttonClick="deleteTodo" label="Delete" class="btn btn-danger" />
+            <todo-form-button v-on:buttonClick="cancel($event)" label="Cancel" class="btn btn-secondary" />
           </div>
 
           <div v-if="errorMessage" class="alert alert-danger" role="alert">

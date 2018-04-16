@@ -1,3 +1,8 @@
+/**
+ * PageTodoList
+ *
+ * Page which lists all the todo items as cards.
+ */
 var PageTodoList = Vue.component('page-todo-list', {
   data: function() {
     return {

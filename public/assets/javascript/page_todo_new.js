@@ -1,3 +1,8 @@
+/**
+ * PageTodoNew
+ *
+ * Page for creating todo items.
+ */
 var PageTodoNew = Vue.component('page-todo-new', {
   methods: {
     redirectToList: function() {

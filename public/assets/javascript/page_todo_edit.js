@@ -1,3 +1,8 @@
+/**
+ * PageTodoEdit
+ *
+ * Page for editing todo items.
+ */
 var PageTodoEdit = Vue.component('page-todo-edit', {
   methods: {
     redirectToList: function() {

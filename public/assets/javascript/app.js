@@ -1,4 +1,8 @@
-'use strict';
+/**
+ * Main App.
+ *
+ * Entry point for the application.
+ */
 
 Vue.use(VueRouter);
 
