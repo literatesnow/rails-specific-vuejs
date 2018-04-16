@@ -10,7 +10,8 @@ var router = new VueRouter({
   routes: [
     { name: 'list', path: '/list',      component: PageTodoList },
     { name: 'new',  path: '/new',       component: PageTodoNew  },
-    { name: 'edit', path: '/edit/:id',  component: PageTodoEdit }
+    { name: 'edit', path: '/edit/:id',  component: PageTodoEdit },
+    { path: '/', redirect: { name: 'list' } }
   ]
 });
 
