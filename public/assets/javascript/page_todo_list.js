@@ -1,6 +1,7 @@
 var PageTodoList = Vue.component('page-todo-list', {
   data: function() {
     return {
+      loaded: false,
       errorMessage: null,
       todoItems: []
     }
@@ -9,8 +10,10 @@ var PageTodoList = Vue.component('page-todo-list', {
   created: function() {
     this.$http.get('/todo_items/').then(function(res) {
       this.todoItems = res.body;
+      this.loaded = true;
     }, function(res) {
       this.errorMessage = new ErrorResponse(res.body).toString();
+      this.loaded = true;
     });
   },
 
@@ -26,7 +29,11 @@ var PageTodoList = Vue.component('page-todo-list', {
         {{ errorMessage }}
       </div>
 
-      <div v-if="!todoItems.length && !errorMessage" class="alert alert-info" role="alert">
+      <div v-if="!loaded" class="loading">
+        <img src="assets/images/gear.png" class="spinning">
+      </div>
+
+      <div v-if="loaded && !todoItems.length && !errorMessage" class="alert alert-info" role="alert">
         Create a <router-link :to="{ name: 'new' }">new todo</router-link> and start getting stuff done!
       </div>
 

@@ -3,7 +3,7 @@ class TodoItemsController < ApplicationController
 
   # GET /todo_items
   def index
-    @todo_items = TodoItem.all
+    @todo_items = TodoItem.order('completed asc, created_at asc')
 
     render json: @todo_items
   end

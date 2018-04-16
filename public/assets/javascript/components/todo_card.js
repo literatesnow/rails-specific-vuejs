@@ -2,49 +2,65 @@ var TodoCard = Vue.component('todo-card', {
   props: ['id', 'title', 'text', 'completed', 'due_at', 'created_at'],
 
   methods: {
-    infoText: function() {
-      var strings = [];
-
-      if (this.due_at) {
-        strings.push('Due: ' + moment(this.due_at).fromNow());
-      }
-      if (this.created_at) {
-        strings.push('Created: ' + moment(this.created_at).fromNow());
+    cardStyle: function() {
+      var classes = {};
+      if (this.completed) {
+        classes['border-success'] = true;
+      } else if (this.isOverdue()) {
+        classes['border-danger'] = true;
       }
 
-      return strings.join(', ');
+      return classes;
+    },
+
+    isCompleted: function() {
+      return this.completed;
+    },
+
+    isOverdue: function() {
+      if (!this.due_at) {
+        return false;
+      }
+
+      return moment(this.due_at).isBefore(moment(), 'second');
+    },
+  },
+
+  filters: {
+    momentAt: function(date) {
+      if (!date) {
+        return '';
+      }
+
+      return moment(date).fromNow();
+    },
+
+    snip: function(text, max) {
+      if (!text) {
+        return '';
+      }
+      if (text.length < max) {
+        return text;
+      }
+      return text.substring(0, max) + '...';
     }
   },
 
   template: `
-    <div class="col-sm-3">
-      <div class="card border-dark mb-3">
-        <div class="card-header">{{ title }}</div>
-        <div class="card-body">
-          <p class="card-text">{{ text }}</p>
+    <router-link tag="div"
+                 class="col-sm-3 clickable"
+                 :to="{ name: 'edit', params: { id: this.id } }">
+      <div class="card mb-3" v-bind:class="cardStyle()">
+        <div class="card-header clickable">
+          <h5>{{ title }}</h5>
         </div>
-        <div class="card-footer text-muted">
-          <span data-toggle="tooltip" data-placement="top" :title="infoText()">Info</span>
-          &bull;
-          <router-link :to="{ name: 'edit', params: { id: this.id } }">Edit</router-link>
-          &bull;
-          Delete
+        <div class="card-body clickable">
+          <p class="card-text">{{ text | snip(100) }}</p>
+        </div>
+        <div class="card-footer clickable" v-if="due_at">
+          <small class="text-muted">Due {{ due_at | momentAt }}</small>
         </div>
       </div>
-    </div>
+    </router-link>
     `
 });
-
-/*
-    <div class="card">
-      <div class="header">
-        <h2>{{ title }}</h2>
-      </div>
-      <div class="text">{{ text }}</div>
-      <div>{{ created_at | moment_ago }} {{ due_at | moment_ago }}</div>
-      <div class="footer">
-        <input type="checkbox" v-model="completed">
-        <img class="delete" src="assets/images/delete.png" alt="Delete">
-      </div>
-    </section>
-    */

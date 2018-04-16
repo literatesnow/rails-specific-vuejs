@@ -8,15 +8,28 @@ img.glyph {
   height: 0.5em;
 }
 
-div.card-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: center;
-  align-items: flex-start;
+nav.navbar {
+  margin-bottom: 1em;
 }
 
-div.card {
-  align-self: auto;
+div.card div.clickable {
+  cursor: pointer;
+}
+
+div.card img.info {
+  height: 1em;
+}
+
+div.loading img.spinning {
+  height: 2em;
+  animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(1) rotate(360deg);
+  }
 }

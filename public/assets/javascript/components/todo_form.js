@@ -1,4 +1,6 @@
 var TodoForm = Vue.component('todo-form', {
+  props: ['todoId'],
+
   data: function() {
     return {
       formItem: {
@@ -10,12 +12,40 @@ var TodoForm = Vue.component('todo-form', {
         completed:    null,
       },
 
-      titleError: null,
+      loaded:       false,
+      titleError:   null,
       errorMessage: null
     }
   },
 
-  props: ['todoId'],
+  computed: {
+    dueAtDate: function() {
+      var dueAt = null;
+
+      if (this.formItem.dueDate !== null) {
+        dueAt = moment(this.formItem.dueDate);
+      }
+
+      if (this.formItem.dueTime !== null) {
+        //use today if user didn't specify date
+        if (dueAt === null) {
+          dueAt = moment();
+        }
+        dueAt.startOf('day').add(this.formItem.dueTime, 'minutes')
+      }
+
+      return dueAt;
+    },
+
+    isOverdue: function() {
+      var dueAt = this.dueAtDate;
+      if (dueAt === null) {
+        return false;
+      }
+
+      return dueAt.isBefore(moment(), 'second');
+    },
+  },
 
   methods: {
     hasId: function() {
@@ -32,8 +62,10 @@ var TodoForm = Vue.component('todo-form', {
     getTodo: function() {
       this.$http.get('/todo_items/' + encodeURIComponent(this.todoId)).then(function(res) {
         this.fromToDoItem(res.body);
+        this.loaded = true;
       }, function(res) {
         this.errorMessage = new ErrorResponse(res.body).toString();
+        this.loaded = true;
       });
     },
 
@@ -42,13 +74,10 @@ var TodoForm = Vue.component('todo-form', {
 
       var todoItem = this.toToDoItem();
 
-      console.log('create', todoItem);
-
       this.$http.post('/todo_items', todoItem).then(function(res) {
-        console.log('parp', res);
-        this.$emit('create', todoItem);
+        this.$emit('createTodo', todoItem);
       }, function(res) {
-        handleXhrError(res);
+        this.handleXhrError(res);
       });
     },
 
@@ -56,22 +85,38 @@ var TodoForm = Vue.component('todo-form', {
       this.buttonDefaults(e);
 
       var todoItem = this.toToDoItem();
+      var uri      = '/todo_items/' + encodeURIComponent(this.todoId);
 
-      console.log('uppppdate', todoItem);
-
-      this.$http.put('/todo_items/' + encodeURIComponent(this.todoId), todoItem).then(function(res) {
-        console.log('updated! parp', res);
-        this.$emit('update', todoItem);
+      this.$http.put(uri, todoItem).then(function(res) {
+        this.$emit('updateTodo', todoItem);
       }, function(res) {
-        handleXhrError(res);
+        this.handleXhrError(res);
+      });
+    },
+
+    deleteTodo: function(e) {
+      this.buttonDefaults(e);
+
+      if (!confirm('Are you sure?')) {
+        return;
+      }
+
+      var uri = '/todo_items/' + encodeURIComponent(this.todoId);
+
+      this.$http.delete(uri).then(function(res) {
+        this.$emit('deleteTodo', this.todoId);
+      }, function(res) {
+        this.handleXhrError(res);
       });
     },
 
     toToDoItem: function() {
+      var dueAt = this.dueAtDate;
+
       var todoItem = {
         title:     this.formItem.title,
         text:      this.formItem.text,
-        due_at:    this.dueAtFromForm(),
+        due_at:    (dueAt) ? dueAt.format() : null,
         completed: this.formItem.completed
       };
 
@@ -79,21 +124,19 @@ var TodoForm = Vue.component('todo-form', {
     },
 
     fromToDoItem: function(todoItem) {
-      console.log('fromToDoItem', todoItem);
-
       this.formItem.title     = todoItem.title;
       this.formItem.text      = todoItem.text;
       this.formItem.completed = todoItem.completed;
 
       if (todoItem.due_at) {
-        var dueAt = moment(todoItem.due_at).toDate();
-        $('.datepicker').pickadate('set', { select: dueAt });
-        $('.timepicker').pickatime('set', { select: dueAt });
+        var dueAt = moment(todoItem.due_at);
+        $('.datepicker').pickadate('set', { select: dueAt.toDate() });
+        $('.timepicker').pickatime('set', { select: (dueAt.hours() * 60) + dueAt.minutes() });
       }
     },
 
     cancel: function() {
-      this.$emit('cancel');
+      this.$emit('cancelTodo');
     },
 
     datePickerSelect: function(context) {
@@ -102,28 +145,6 @@ var TodoForm = Vue.component('todo-form', {
       } else {
         return null;
       }
-    },
-
-    dueAtFromForm: function() {
-      var dueAt = null;
-
-      if (this.formItem.dueDate !== null) {
-        dueAt = moment(this.formItem.dueDate);
-      }
-
-      if (this.formItem.dueTime !== null) {
-        //use today if user didn't specify date
-        if (dueAt === null) {
-          dueAt = moment().startOf('day');
-        }
-        dueAt.add(this.formItem.dueTime, 'minutes')
-      }
-
-      if (dueAt !== null) {
-        return dueAt.toDate();
-      }
-
-      return null;
     },
 
     handleXhrError: function(res) {
@@ -136,12 +157,6 @@ var TodoForm = Vue.component('todo-form', {
   },
 
   mounted: function() {
-    console.log('mounted form', this.todoId, this.hasId());
-
-    if (this.hasId()) {
-      this.getTodo();
-    }
-
     $('.datepicker').pickadate({
       onSet: function(context) {
         this.formItem.dueDate = this.datePickerSelect(context);
@@ -154,47 +169,62 @@ var TodoForm = Vue.component('todo-form', {
         this.formItem.dueTime = this.datePickerSelect(context);
       }.bind(this)
     });
+
+    if (this.hasId()) {
+      this.getTodo();
+    } else {
+      this.loaded = true;
+    }
   },
 
   template: `
-      <form>
-        <div v-if="errorMessage" class="alert alert-danger" role="alert">
-          {{ errorMessage }}
+      <div>
+        <div v-if="!loaded" class="loading">
+          <img src="assets/images/gear.png" class="spinning">
         </div>
 
-        <div class="form-group">
-          <label for="todoTitle">Title <span v-if="titleError" class="badge badge-danger">{{ titleError }}</span></label>
-          <input v-model="formItem.title" type="text" class="form-control" id="todoTitle" aria-describedby="todoTitleHelp" placeholder="Enter title">
-          <small id="todoTitleHelp" class="form-text text-muted">What needs to be done?</small>
-        </div>
-        <div class="form-group">
-          <label for="todoText">Text</label>
-          <textarea v-model="formItem.text" type="text" class="form-control" id="todoText" aria-describedby="todoTextHelp" placeholder="Enter text" rows="6"></textarea>
-          <small id="todoTextHelp" class="form-text text-muted">Further details (optional)</small>
-        </div>
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="todoDueDate">Due Date</label>
-            <input type="text" class="form-control datepicker" id="todoDueDate" placeholder="Enter due date">
+        <form v-show="loaded">
+          <div class="form-group">
+            <label for="todoTitle">Title <span v-if="titleError" class="badge badge-danger">{{ titleError }}</span></label>
+            <input v-model="formItem.title" type="text" class="form-control" id="todoTitle" aria-describedby="todoTitleHelp" placeholder="Enter title">
+            <small id="todoTitleHelp" class="form-text text-muted">What needs to be done?</small>
           </div>
-          <div class="form-group col-md-6">
-            <label for="todoDueTime">Due Time</label>
-            <input type="text" class="form-control timepicker" id="todoDueTime" placeholder="Enter due time">
+          <div class="form-group">
+            <label for="todoText">Text</label>
+            <textarea v-model="formItem.text" type="text" class="form-control" id="todoText" aria-describedby="todoTextHelp" placeholder="Enter text" rows="6"></textarea>
+            <small id="todoTextHelp" class="form-text text-muted">Further details</small>
           </div>
-        </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="todoDueDate">Due Date <span v-if="this.isOverdue" class="badge badge-danger">Overdue</span></label>
+              <input type="text" class="form-control datepicker" id="todoDueDate" placeholder="Enter due date">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="todoDueTime">Due Time</label>
+              <input type="text" class="form-control timepicker" id="todoDueTime" placeholder="Enter due time">
+            </div>
+          </div>
 
-        <div v-if="hasId()" class="form-group">
-          <div class="form-check">
-            <input v-model="formItem.completed" class="form-check-input" type="checkbox" value="" id="todoCompleted">
-            <label class="form-check-label" for="todoCompleted">
-              Completed
-            </label>
+          <div v-if="hasId()" class="form-group">
+            <div class="form-check">
+              <input v-model="formItem.completed" class="form-check-input" type="checkbox" value="" id="todoCompleted">
+              <label class="form-check-label" for="todoCompleted">
+                Completed
+              </label>
+            </div>
           </div>
-        </div>
 
-        <button v-if="!hasId()" v-on:click="createTodo" type="submit" class="btn btn-primary">Create</button>
-        <button v-if="hasId()" v-on:click="updateTodo" type="submit" class="btn btn-primary">Update</button>
-        <button v-on:click="cancel" type="button" class="btn btn-secondary">Cancel</button>
-      </form>
+          <div class="form-group">
+            <button v-if="!hasId()" v-on:click="createTodo" type="submit" class="btn btn-primary">Create</button>
+            <button v-if="hasId()" v-on:click="updateTodo" type="submit" class="btn btn-primary">Update</button>
+            <button v-if="hasId()" v-on:click="deleteTodo" type="submit" class="btn btn-danger">Delete</button>
+            <button v-on:click="cancel" type="button" class="btn btn-secondary">Cancel</button>
+          </div>
+
+          <div v-if="errorMessage" class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+          </div>
+        </form>
+      </div>
     `
 });
