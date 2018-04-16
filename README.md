@@ -8,16 +8,16 @@ Simple Todo single page application using Ruby on Rails, Bootstrap and Vue.Js.
 * Mark as completed.
 * Due Date.
 
-## Browser Support
-
-Tested with ``Chrome x86_64 Version 65.0.3325.181``.
-
-* [Template literals](https://caniuse.com/#search=Template%20literals)
-* [Vue.js Compatibility](https://vuejs.org/v2/guide/installation.html#Compatibility-Note)
-
 ## Requirements
 
 * [Docker](https://www.docker.com/) installed and running.
+
+### Browser Support
+
+Tested with Chrome x86_64 (Version 65.0.3325.181).
+
+* [Template literals](https://caniuse.com/#search=Template%20literals)
+* [Vue.js Compatibility](https://vuejs.org/v2/guide/installation.html#Compatibility-Note)
 
 ## Production
 
