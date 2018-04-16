@@ -10,9 +10,11 @@ var TodoCard = Vue.component('todo-card', {
     cardStyle: function() {
       var classes = {};
       if (this.completed) {
-        classes['border-success'] = true;
+        classes['bg-success'] = true;
       } else if (this.isOverdue()) {
-        classes['border-danger'] = true;
+        classes['bg-danger'] = true;
+      } else {
+        classes['bg-dark'] = true;
       }
 
       return classes;
@@ -53,7 +55,7 @@ var TodoCard = Vue.component('todo-card', {
 
   template: `
     <router-link tag="div"
-                 class="col-sm-3 clickable"
+                 class="col-sm-3 text-white clickable"
                  :to="{ name: 'edit', params: { id: this.id } }">
       <div class="card mb-3" v-bind:class="cardStyle()">
         <div class="card-header clickable">
@@ -62,8 +64,8 @@ var TodoCard = Vue.component('todo-card', {
         <div class="card-body clickable">
           <p class="card-text">{{ text | snip(100) }}</p>
         </div>
-        <div class="card-footer clickable" v-if="due_at">
-          <small class="text-muted">Due {{ due_at | momentAt }}</small>
+        <div class="card-footer clickable" v-if="!isCompleted() && due_at">
+          <small>Due {{ due_at | momentAt }}</small>
         </div>
       </div>
     </router-link>
